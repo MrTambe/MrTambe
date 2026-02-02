@@ -1,0 +1,32 @@
+name: Update Space Shooter GIF
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # Runs every night
+  workflow_dispatch: # Allows you to run it manually
+
+permissions:
+  contents: write # Crucial: Allows the bot to save the GIF to your repo
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Create assets directory
+        run: mkdir -p assets
+        
+      - uses: czl9707/gh-space-shooter@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          output-path: assets/space-shooter.gif
+          strategy: random
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/space-shooter.gif
+          git commit -m "Update Space Shooter Animation" || exit 0
+          git push
